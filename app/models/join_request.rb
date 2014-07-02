@@ -1,0 +1,3 @@
+class JoinRequest < Model
+
+end

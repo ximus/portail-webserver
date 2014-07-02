@@ -1,0 +1,1 @@
+Factor.create(:root_user)

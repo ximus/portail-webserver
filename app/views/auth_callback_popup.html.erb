@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+  <script type="text/javascript">
+    var response = <%= jbuilder :'data/auth_response', locals: {user: @user} %>
+    if(window.opener) {
+      window.opener.authPopupCallback(response)
+    }
+    window.close()
+  </script>
+</body>
+</html>

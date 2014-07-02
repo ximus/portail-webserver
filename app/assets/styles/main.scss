@@ -1,0 +1,35 @@
+// WARN(max): Hardcoded path to be fixed
+// $icon-font-path: "/vendor/sass-bootstrap/fonts/";
+
+// TODO: selectively include bootstrap required elements
+@import "bootstrap";
+@import "callout";
+
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#main-container {
+  padding-top: 70px;
+}
+
+.user-badge {
+  float: right;
+  height: 50px;
+  line-height: 50px;
+  img, span {
+    vertical-align: middle;
+    color: #dcdcdc;
+    margin-left: .8em;
+  }
+  img {
+    height: 40px;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+  }
+}

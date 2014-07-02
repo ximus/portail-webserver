@@ -1,0 +1,3 @@
+<% Auth.providers.each do |(provider_id, _)| %>
+  <a href="/auth/<%= provider_id %>" popup><%= i18n.auth.send(provider_id).name %></a>
+<% end %>

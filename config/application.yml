@@ -1,0 +1,26 @@
+---
+session_secret: ''
+database:
+  adapter: sqlite3
+  encoding: utf8
+  pool: 2
+  timeout: 5000
+
+i18n:
+  name: "Portail"
+  auth:
+    google_oauth2:
+      name: "Google"
+      icon: ""
+    twitter:
+      name: "Twitter"
+      icon: ""
+    yahoo:
+      name: "Yahoo"
+      icon: ""
+    windowslive:
+      name: "Live/Hotmail"
+      icon: ""
+    facebook:
+      name: "Facebook"
+      icon: ""

@@ -1,0 +1,23 @@
+---
+database:
+  database: 'db/development.sqlite'
+gate:
+  endpoint: 'localhost:9999'
+session_secret: 'devsecret'
+auth:
+  providers:
+    google_oauth2:
+      - 963447529080-h2bpofq1fm8sgjcqf194d1l6kkrg03mg.apps.googleusercontent.com
+      - hT67V2CxUg3j8MfJVvXXkVet
+    facebook:
+      - 754806051236495
+      - ab99457bb31da177e161563a38087592
+    yahoo:
+      - dj0yJmk9MTdsU0toNHdFbEM2JmQ9WVdrOVoxVlNXbFZaTldjbWNHbzlNQS0tJnM9Y29uc3VtZXJzZWNyZXQmeD05MQ--
+      - 5bb47f745969e9fa7a74586e560c20be753f7553
+    twitter:
+      - AG5AN3S3AaYhMpgyXtdNkOX7g
+      - gHfvUYNu01lxtuwIV84KjA1JYUPOg5spvFr6Fd14GRDgxiil8F
+    windowslive:
+      - 000000004C11DD3D
+      - q69xDm6BL8qBwzrVzvfjY0RpMqJvYW5d

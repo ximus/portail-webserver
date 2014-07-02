@@ -1,0 +1,12 @@
+database:
+  # database: ":memory:?cache=shared"
+  database: db/test.sqlite
+
+auth:
+  providers:
+    developer:
+i18n:
+  auth:
+    developer:
+      name: "Test provider"
+      icon: ''

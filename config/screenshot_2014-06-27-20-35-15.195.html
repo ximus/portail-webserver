@@ -1,0 +1,52 @@
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Portail</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+
+    <link rel="stylesheet" href="/assets/styles/main-f1a5b80d910c671bdb8f665645d2e053.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+  </head>
+  <body role="document" ng-app="gate" ng-cloak>
+    <!--[if lt IE 8]>
+      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <div ng-if="currentUser" class="user-badge">
+            <img ng-src="{{currentUser.image_url}}">
+            <span>{{currentUser.name}}</span>
+          </div>
+          <button id="menu" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+            <li><a href="#" ng-click="$emit('logout')">Communauté</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Déconnecter</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="main-container" class="container">
+      <div ng-view></div>
+    </div><!-- /container -->
+
+    <!--[if lt IE 9]>
+    <script src="assets/vendor/es5-shim/es5-shim.js"></script>
+    <script src="assets/vendor/json3/lib/json3.min.js"></script>
+    <![endif]-->
+
+    
+    <script src="/assets/scripts/main-1855f17466faba4ca7e70fddc903a336.js"></script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+* namespace the config key routes under something like '/key/:key'
