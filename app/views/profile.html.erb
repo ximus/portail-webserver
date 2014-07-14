@@ -1,0 +1,21 @@
+<div ng-if="isNewUser()" class="callout callout-info">
+  <h4>Bienvenue</h4>
+  <p>
+    J'ai besoin de ton nom et email pour te distinguer dans la foule.
+  </p>
+  <p>
+    Une fois cette étape validé, si c'est ta première fois, il faudra qu'un membre existant parraine ton inscription.
+  </p>
+</div>
+
+<form role="form">
+  <div class="form-group">
+    <label for="exampleInputPassword1">Nom</label>
+    <input name="name" type="text" class="form-control" ng-model="profile.name" placeholder="Entrer un nom" required>
+  </div>
+  <div class="form-group">
+    <label for="exampleInputEmail1">Adresse Email</label>
+    <input name="email" type="email" class="form-control" ng-model="profile.email" placeholder="Entrer une adresse email" required>
+  </div>
+  <button type="submit" ng-click="submit()" class="btn btn-default">Enregistrer</button>
+</form>

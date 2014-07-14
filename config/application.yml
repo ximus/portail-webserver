@@ -9,18 +9,20 @@ database:
 i18n:
   name: "Portail"
   auth:
-    google_oauth2:
+    google:
       name: "Google"
       icon: ""
+      css_id: google-plus
     twitter:
       name: "Twitter"
       icon: ""
     yahoo:
       name: "Yahoo"
       icon: ""
-    windowslive:
-      name: "Live/Hotmail"
+    microsoft:
+      name: "Microsoft"
       icon: ""
+      css_id: windows
     facebook:
       name: "Facebook"
       icon: ""

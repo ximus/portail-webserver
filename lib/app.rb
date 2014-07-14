@@ -14,7 +14,11 @@ require 'settingslogic'
 require 'active_record'
 require 'activeuuid'
 
-class App
+# MultiJson.load_options = { symbolize_keys: true }
+
+module App
+  extend self
+
   DEFAULT_PATHS = {
     migrations: 'db/migrate',
     tests:      'spec',
@@ -33,20 +37,15 @@ class App
   attr_reader :assets
   attr_reader :paths
 
-  class << self
-    attr_accessor :instance
-
-    def request_thread_count
-      if const_defined?('Puma') and Puma.respond_to?(:cli_config)
-        Puma.cli_config.options[:max_threads]
-      else
-        2
-      end
+  def request_thread_count
+    if const_defined?('Puma') and Puma.respond_to?(:cli_config)
+      Puma.cli_config.options[:max_threads]
+    else
+      2
     end
   end
 
-  def initialize
-    self.class.instance = self
+  def init
     root_path = File.expand_path('..', File.dirname(__FILE__))
     @root   = Pathname.new(root_path)
     @paths  = OpenStruct.new(DEFAULT_PATHS.inject({}) { |h, (k, v)| h[k] = root.join(v); h })
@@ -87,6 +86,8 @@ class App
     log.info("ActiveRecord connection pool size: #{config[:pool]}")
     ActiveRecord::Base.logger = log
     ActiveRecord::Base.establish_connection(config)
+    # Bundler requires activeuuid too early, patches need to be reapplied
+    ActiveUUID::Patches.apply!
   end
 
   # paths config/application.yml and config/application/environment/{appenv}.yml

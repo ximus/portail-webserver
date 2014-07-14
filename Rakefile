@@ -6,12 +6,12 @@ require 'active_record'
 
 namespace :db do
   def migrations_path
-    ENV['MIGRATIONS_DIR'] || App.instance.paths.migrations
+    ENV['MIGRATIONS_DIR'] || App.paths.migrations
   end
   task :environment do
     # App registers the db connection
 
-    App.instance.env
+    App.env
   end
 
   # desc 'Create the database from config/database.yml for the current DATABASE_ENV'

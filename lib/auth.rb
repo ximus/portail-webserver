@@ -1,20 +1,11 @@
 class Auth
   class << self
     def providers
-      config.providers.keys
-    end
-
-    def omniauth_providers
-      Proc.new do
-        # Dynamically load providers from app config
-        config.providers.each do |(provider_id, config)|
-          provider(provider_id, config.token, config.secret)
-        end
-      end
+      config.providers
     end
 
     def config
-      App.instance.config.auth
+      App.config.auth
     end
   end
 end

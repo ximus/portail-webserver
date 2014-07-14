@@ -8,12 +8,10 @@ angular.module('gate').controller('LoginCtrl', ['$scope', 'Routes', function($sc
   $scope.$onRootScope('auth_complete', function(event, response) {
     var auth = $scope.auth
     auth.iid = response.iid
-    debugger
     if (response.user) {
       auth.currentUser = response.user
       Routes.gotoHome()
     } else {
-      debugger
       profileSeedCache(response.iid, response.signupSeed)
       // user needs to setup profile
       Routes.gotoProfile()

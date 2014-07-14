@@ -12,7 +12,7 @@ class AuthController < Controller
       @signup_seed = signup_seed(auth_hash)
     end
 
-    session[:iid] = @identity.slug.to_s
+    session[:iid] = @identity.slug
 
     erb :'auth_callback_popup'
   end
@@ -26,8 +26,8 @@ class AuthController < Controller
     ret = {}
     info = auth_hash[:info]
     ret[:email] ||= info[:email]
-    ret[:name]  ||= [info[:first_name], info[:last_name]].join(' ') || info[:name]
-    ret[:image_url] = info[:image_url] if info[:image_url]
+    ret[:name]  ||= [info[:first_name], info[:last_name]].join(' ').presence || info[:name]
+    ret[:image_url] = info[:image_url]
     ret
   end
 end

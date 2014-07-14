@@ -11,26 +11,32 @@ require 'database_cleaner'
 
 require_relative '../config/boot'
 
-Dir[App.instance.root.join("spec/factories/**/*.rb")].each { |f| require f }
-Dir[App.instance.root.join("spec/support/**/*.rb")].each   { |f| require f }
+Dir[App.root.join("spec/factories/**/*.rb")].each { |f| require f }
+Dir[App.root.join("spec/support/**/*.rb")].each   { |f| require f }
 
-DatabaseCleaner.strategy = :transaction
+# DatabaseCleaner.strategy = :transaction
+DatabaseCleaner.strategy = :truncation
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods
   config.include OmniauthMacros
+  config.include FeatureMacros
 
   config.mock_with :rspec
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
 
+  config.before(:all) do
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
   config.before(:each) do
-    mock_auth_hash
+    OmniAuth.config.mock_auth[:default] = mock_omniauth_hash
   end
 
   config.around(:each) do |example|
-    DatabaseCleaner.cleaning { example }
+    DatabaseCleaner.cleaning { example.run }
   end
 end
 

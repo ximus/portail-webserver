@@ -4,7 +4,6 @@ if current_user
   end
 end
 
-binding.pry
 if current_identity
   json.iid current_identity.slug
 end

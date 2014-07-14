@@ -1,10 +1,15 @@
+session_secret: 'testsecret'
 database:
+  # the following db URI is not supported by ActiveRecord
+  # (bugs in both AR proper and sqlite adapter)
   # database: ":memory:?cache=shared"
   database: db/test.sqlite
 
 auth:
   providers:
     developer:
+      omniauth:
+        id: developer
 i18n:
   auth:
     developer:

@@ -3,47 +3,58 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Portail</title>
+    <title>Portail Bibémus</title>
     <meta name="description" content="">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent" >
+    <meta name="format-detection" content="telephone=no">
 
+    <meta name="application-name" content="Portail Bibémus">
+
+
+    <!-- TODO: review which font sizes I actually need -->
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,500,500italic,400italic,300italic,300' rel='stylesheet' type='text/css'>
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <link rel="stylesheet" href="<%= asset_path("styles/main.css") %>">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
   </head>
   <body role="document" ng-app="gate" ng-cloak>
     <!--[if lt IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <div ng-if="currentUser" id="logged-in-user-badge" class="user-badge">
-            <img ng-src="{{currentUser.image_url}}">
-            <span>{{currentUser.name}}</span>
-          </div>
-          <button id="menu" type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul ng-if="currentUser" class="nav navbar-nav">
-            <li>
-              <a href="#" ng-click="$emit('logout')">Communauté</a>
-            </li>
-            <li class="divider"></li>
-            <li>
-              <a href="#" ng-click="$emit('logout')">Se déconnecter</a>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <div id="appbar" ng-if="currentUser">
+      <button id="appmenu-toggle" class="btn btn-lg btn-flat" ng-click="$root.menuEnabled=true">
+        <i class="fa fa-bars"></i>
+      </button>
     </div>
-    <div id="main-container" class="container">
-      <div ng-view></div>
-    </div><!-- /container -->
+
+    <div id="appmenu" role="navigation" ng-class="menuEnabled ? 'open' : ''" ng-if="currentUser">
+      <div id="logged-in-user-badge" class="user-badge">
+        <img ng-src="{{currentUser.image_url}}">
+        <span>{{currentUser.name}}</span>
+      </div>
+      <ul class="nav navbar-nav">
+        <li>
+          <a href="/users" class="btn btn-link">Communauté</a>
+        </li>
+        <li class="divider"></li>
+        <li>
+          <a href="#" ng-click="$emit('logout')" class="btn btn-link">Se déconnecter</a>
+        </li>
+      </ul>
+    </div>
+
+    <div id="main-container" ng-view></div>
+
+    <% %w(gate profile login users).each do |view| %>
+      <script type="text/ng-template" id="/views/<%= view %>.html">
+        <%= erb :"#{view}.html" %>
+      </script>
+    <% end %>
 
     <!--[if lt IE 9]>
     <script src="assets/vendor/es5-shim/es5-shim.js"></script>

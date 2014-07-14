@@ -2,10 +2,7 @@
 
 require File.join(File.dirname(__FILE__), '../config/boot')
 
-app = App.instance
-
 puts "Welcome to #{app.i18n.name}'s dev console"
-puts "An app instance is available at 'app'"
 puts "\n"
 
 Pry.start

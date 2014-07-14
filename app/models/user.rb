@@ -1,11 +1,12 @@
 class User < Model
-  GRAVATAR_URL_BASE = 'http://www.gravatar.com/avatar/'
+  GRAVATAR_URL_TEMPLATE = 'http://www.gravatar.com/avatar/%s?d=identicon'
 
   has_many :identities
 
   before_validation do
-    if email.present? && changed.include?('email')
-      self.image_url = GRAVATAR_URL_BASE + Digest::MD5.hexdigest(email)
+    if (image_url.blank? || using_gravatar?) &&
+        email.present? && changed.include?('email')
+      self.image_url = GRAVATAR_URL_TEMPLATE % Digest::MD5.hexdigest(email)
     end
   end
 
@@ -24,5 +25,9 @@ class User < Model
 
   def vetted?
     !vetted_by.nil?
+  end
+
+  def using_gravatar?
+    image_url && image_url.match('gravatar.com')
   end
 end

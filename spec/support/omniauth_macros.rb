@@ -5,9 +5,10 @@ module OmniauthMacros
     @mock_omniauth_hash ||= OmniAuth::AuthHash.new({
       'provider' => 'developertestprovider',
       'uid' => '123545',
-      'user_info' => {
+      'info' => {
         'name' => 'mockuser',
-        'image' => 'mock_user_thumbnail_url'
+        'image' => 'mock_user_thumbnail_url',
+        'email' => 'mockeuser@example.com'
       },
       'credentials' => {
         'token' => 'mock_token',

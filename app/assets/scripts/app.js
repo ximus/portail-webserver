@@ -3,14 +3,23 @@
 var app = angular.module('gate', ['ngRoute'])
 
 function profileSeedCache(iid, val) {
-  if (!id) { console.error('profileSeedCache: missing iid'); return }
+  if (!iid) { console.error('profileSeedCache: missing iid'); return }
   key = "user-seed-cache:"+iid
-  if (arguments.legnth === 1) {
+  if (arguments.length === 1) {
     return JSON.parse(localStorage.getItem(key))
   } else {
-    return localStorage.setItem(key, JSON.stringify(val))
+    return val && localStorage.setItem(key, JSON.stringify(val))
   }
 }
+
+$(function() {
+  // i'm pretty sure I have to do this, whatever
+  var menu = $('#appmenu')
+  menu.css('transform', 'translate(-' + (menu.outerWidth()+50) + 'px)')
+  // $('#appmenu-toggle').click(function() {
+  //   menu.toggleClass('open')
+  // })
+})
 
 app.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider){
   $routeProvider.when('/login',

@@ -8,5 +8,4 @@ Bundler.require
 
 require 'app'
 
-# currently this populates App.instance
-App.new
+App.init

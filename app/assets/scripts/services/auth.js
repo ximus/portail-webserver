@@ -32,7 +32,7 @@ function(Routes, util, $http, $route) {
     // init state from data seeds embeded in page by server
     this.iid = window.seeds.iid
     if (window.seeds.userInfo) {
-      this.currentUser = window.seed.userInfo
+      this.currentUser = window.seeds.userInfo
     }
   }
 

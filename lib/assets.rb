@@ -5,6 +5,11 @@ require 'sprockets'
 require 'sprockets-sass'
 require 'bootstrap-sass'
 
+compass_config = Compass.detect_configuration_file(App.root)
+Compass.add_project_configuration(compass_config)
+
+Sass.load_paths << App.root.join('app/assets/vendor')
+
 # this circumvents an error
 module Bootstrap
   class << self
@@ -25,7 +30,7 @@ class Assets < Sprockets::Environment
     append_path('app/assets')
     append_path(Bootstrap.javascripts_path)
 
-    if App.instance.env.production?
+    if App.env.production?
       self.js_compressor  = :uglify
       self.css_compressor = :scss
     end

@@ -11,5 +11,11 @@ class Controller < Sinatra::Application
   # TODO: setup proper initialization
   Tilt.register Tilt::ERBTemplate, 'html.erb'
 
-  set :views, App.instance.root.join('app/views')
+  set :views, App.root.join('app/views')
+
+  before do
+    if App.env.development?
+      App.log.info("rack.session: #{env['rack.session'].inspect}")
+    end
+  end
 end

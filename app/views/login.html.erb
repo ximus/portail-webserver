@@ -1,3 +1,19 @@
-<% Auth.providers.each do |(provider_id, _)| %>
-  <a href="/auth/<%= provider_id %>" popup><%= i18n.auth.send(provider_id).name %></a>
+<h1 class="md-typo-display-1">Portail Bibemus</h1>
+
+<p class="md-typo-subhead">
+  Bienvenue, pour te connecter, il faut que tu sois inscrit à un des services ci-dessous.
+</p>
+
+<% Auth.providers.each do |(provider_id, provider_config)| %>
+  <%
+    provider_i18n = i18n.auth.send(provider_id)
+    css_id        = provider_i18n[:css_id] || provider_id
+    omniauth_id   = provider_config[:omniauth][:id]
+  %>
+  <a
+    href="/auth/<%= omniauth_id %>"
+    popup
+    class="btn btn-lg btn-social btn-<%= css_id %>">
+    <i class="fa fa-<%= css_id %>"></i>Se connecter avec <em><%= provider_i18n.name %></em>
+  </a>
 <% end %>

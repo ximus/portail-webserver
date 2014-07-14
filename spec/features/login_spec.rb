@@ -5,19 +5,9 @@ feature 'Logging in', :js do
     visit '/login'
   end
 
-  def expect_logged_out
-    expect(page).to_not have_selector('#logged-in-user-badge')
-    expect(get_current_uid).to be_blank
-  end
-
-  def expect_logged_in
-    expect(page).to_not have_selector('#logged-in-user-badge')
-    expect(get_current_uid).to_not be_blank
-  end
-
-  def get_current_uid
-    script = "angular.element('[ng-app]').scope().currentUser['id']"
-    page.evaluate_script(script)
+  def expect_identity_from_auth_hash(identity)
+    expect(identity.provider).to eq(mock_omniauth_hash[:provider])
+    expect(identity.provider_uid).to eq(mock_omniauth_hash[:uid])
   end
 
   def expect_user_created
@@ -29,23 +19,41 @@ feature 'Logging in', :js do
   end
 
   scenario 'Logging in without an existing account' do
-    user = build(:user)
+    expect(User.count).to eq(0)
+    expect(Identity.count).to eq(0)
     visit_login
-    click_link 'Test provider'
-    omniauth_hash
-
-  end
-
-  scenario 'Logging in with an existing account' do
-    user = create(:user)
-    visit_login
-    expect_logged_out
-    click_link 'Test provider'
+    click_link('Test provider')
+    # wait for oauth popup to open and close
+    wait_for_oauth_popup
+    expect(Identity.count).to eq(1)
+    expect_identity_from_auth_hash(Identity.first)
+    # user only gets created after confirm profile
+    expect(User.count).to eq(0)
+    # redirects to profile for confirmation
+    expect(current_path).to eq('/profile')
+    # make sure new user intro text is showing
+    expect(page).to have_content('Bienvenue')
+    within('form') do
+      expect(find('[name=name]').value).to  eq(mock_omniauth_hash[:info][:name])
+      expect(find('[name=email]').value).to eq(mock_omniauth_hash[:info][:email])
+    end
+    click_on('Enregistrer')
+    expect(current_path).to eq('/gate')
+    expect(Identity.count).to eq(1)
     expect(User.count).to eq(1)
-    expect_logged_in
   end
+
+  # scenario 'Logging in with an existing account' do
+  #   user = create(:user)
+  #   visit_login
+  #   expect_logged_out
+  #   click_link 'Test provider'
+  #   expect(Identity.count).to eq(1)
+  #   expect(User.count).to eq(0)
+  #   expect_logged_in
+  # end
 end
 
-describe 'authentication', :js do
-  it 'should not display logged in UI items'
-end
+# describe 'authentication', :js do
+#   it 'should not display logged in UI items'
+# end

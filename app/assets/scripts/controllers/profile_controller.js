@@ -1,10 +1,9 @@
-angular.module('gate').controller('ProfileCtrl', ['$scope', '$http', function($scope, $http) {
+angular.module('gate').controller('ProfileCtrl', ['$scope', '$http', 'Routes', function($scope, $http, Routes) {
   // Go home if auth provider step not run
   if (!$scope.auth.isIdentified) {
     Routes.gotoLogin()
   }
 
-  debugger
   $scope.profile = profileSeedCache($scope.auth.iid) || {}
 
   $scope.isNewUser = function() {

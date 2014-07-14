@@ -5,6 +5,7 @@ gem 'puma'
 gem 'rack'
 gem 'rack-contrib'
 gem 'rack-server-pages'
+gem 'rack-static-if-present'
 gem 'sinatra'
 gem "tilt-jbuilder", :require => "sinatra/jbuilder"
 
@@ -14,6 +15,7 @@ gem 'activerecord'
 gem 'activeuuid'
 
 # json
+gem 'multi_json'
 gem 'oj', platforms: :mri
 gem 'gson', platforms: :jruby
 
@@ -33,7 +35,8 @@ gem 'sprockets'
 gem 'sprockets-helpers'
 
 gem 'sass'
-gem 'compass'
+# git: in order to get animation module
+gem 'compass', git: 'git@github.com:Compass/compass.git'
 gem 'sprockets-sass'
 gem 'bootstrap-sass'
 gem 'uglifier'
@@ -49,4 +52,5 @@ group :test do
   gem 'faker'
   gem 'webmock'
   gem 'database_cleaner'
+  gem 'selenium-webdriver'
 end
