@@ -1,15 +1,20 @@
 # A sample Gemfile
 source 'https://rubygems.org'
 
+gem 'foreman'
+
 gem 'puma'
 gem 'rack'
 gem 'rack-contrib'
 gem 'rack-server-pages'
 gem 'rack-static-if-present'
+gem 'encrypted_cookie'
 gem 'sinatra'
 gem "tilt-jbuilder", :require => "sinatra/jbuilder"
 
 gem 'pry'
+gem 'pry-byebug'
+
 gem 'sqlite3'
 gem 'activerecord'
 gem 'activeuuid'
@@ -30,6 +35,8 @@ gem 'activesupport'
 
 gem 'settingslogic'
 
+gem 'faye-websocket'
+
 # Assets
 gem 'sprockets'
 gem 'sprockets-helpers'
@@ -42,10 +49,16 @@ gem 'bootstrap-sass'
 gem 'uglifier'
 
 
+# Gate hardware link
+gem 'coap', github: 'nning/coap'
+gem 'cbor'
+
+
 group :test do
   gem 'capybara'
   gem 'capybara-screenshot'
   gem 'poltergeist'
+  gem "chromedriver-helper"
   gem 'rspec'
   gem 'factory_girl'
   gem 'vcr'
@@ -53,4 +66,9 @@ group :test do
   gem 'webmock'
   gem 'database_cleaner'
   gem 'selenium-webdriver'
+end
+
+group :development do
+  gem 'rbtrace'
+  gem 'ruby-prof'
 end

@@ -14,4 +14,3 @@ i18n:
   auth:
     developer:
       name: "Test provider"
-      icon: ''

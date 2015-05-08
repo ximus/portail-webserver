@@ -5,7 +5,7 @@
 </head>
 <body>
   <script type="text/javascript">
-    var response = <%= jbuilder :'data/auth_response', locals: {user: @user} %>
+    var response = <%= jbuilder :'data/auth_response' %>
     if(window.opener) {
       window.opener.authPopupCallback(response)
     }

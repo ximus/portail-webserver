@@ -1,3 +1,3 @@
 require './config/boot'
 
-run App
+run App.endpoint

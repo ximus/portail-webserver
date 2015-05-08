@@ -1,1 +1,6 @@
 * namespace the config key routes under something like '/key/:key'
+* current asset structure is not used anymore: remove it
+* Workout client and server side timeouts for /live
+* add general error reporting to the user
+* report ui error to the server to notify developer
+* remove access logging of static assests

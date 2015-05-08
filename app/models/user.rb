@@ -14,13 +14,21 @@ class User < Model
     def root
       where('vetted_by = id').first
     end
+
+    def extract_from_auth_hash(hash)
+      {}.tap do |ret|
+        info = hash[:info]
+        ret[:email] ||= info[:email]
+        ret[:name]  ||= [info[:first_name], info[:last_name]].join(' ').presence
+        ret[:name]  ||= info[:name]
+        ret[:image_url] = info[:image] if info[:image]
+      end
+    end
   end
 
   def update_from_auth_hash(hash)
-    info = hash[:info]
-    self.email ||= info[:email]
-    self.name  ||= info[:first_name] || info[:name]
-    self.image_url = info[:image_url] if info[:image_url]
+    attrs = User.extract_from_auth_hash(hash)
+    assign_attributes(attrs)
   end
 
   def vetted?

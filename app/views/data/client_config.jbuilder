@@ -7,3 +7,6 @@ end
 if current_identity
   json.iid current_identity.slug
 end
+
+json.auth client_auth_config
+json.ws_url "ws://#{host}/gate/ws"

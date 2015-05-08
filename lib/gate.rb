@@ -1,50 +1,92 @@
-require 'socket'
+require 'coap'
+require 'cbor'
+require "observer"
 
 class Gate
-  include Singleton
-  STATUS_ID   = 0x0a
-  POSITION_ID = 0x0a
-  OPEN_ID     = 0x0b
+  include Observable
 
-  delegate :synchronize, to: :@mutex
+  drivers = File.expand_path('../gate/drivers', __FILE__)
+  autoload :Fake, drivers + '/fake'
+  autoload :Real, drivers + '/real'
 
-  def initialize
-    @mutex = Mutex.new
-    @socket = TCPSocket.open('localhost', 8785)
-    parser = Wizzicom::Parser.new
+  UNKNOWN     = "unknown"
+  OPEN        = "open"
+  OPENING     = "opening"
+  OPEN_PARTLY = "open_partly"
+  CLOSED      = "closed"
+  CLOSING     = "closing"
 
-    parser.on_packet do |message|
-      puts "Got from parser: #{message}"
-    end
+  STATE_ID_TO_S = [
+    UNKNOWN,
+    OPEN,
+    OPENING,
+    OPEN_PARTLY,
+    CLOSED,
+    CLOSING
+  ]
 
-    Thread.abort_on_exception=true
+  ACTIONS = %w(open close)
 
-    Thread.new do
-      # TODO: should be more efficient to grab more than one byte if there is more available
-      while line = @socket.getbyte
-        puts "Poll receive: #{line.chr}"
-        parser << line
-      end
-      puts "Polling End"
-    end
+  def self.instance
+    driver = "Gate::#{config.driver.capitalize}".constantize
+    @instance ||= new(driver: driver.new)
   end
 
-  # TODO: properly handle concurrent access
-  def open!
-    send(id: OPEN_ID)
+  def self.config
+    App.config.gate
+  end
+
+  delegate *ACTIONS, to: :@driver
+
+  def initialize(downtime: 1, driver:)
+    @downtime = downtime
+    @driver = driver
+    @driver.ondata(&method(:on_data))
   end
 
   def status
-    send(id: STATUS_ID)
+    @last_status
   end
 
-  def postition
-    send(id: POSITION_ID)
-  end
-
-  def send(message)
-    synchronize do
-      @socket << Wizzicom::Writer.dump(message)
+  def add_observer(obs)
+    super(obs)
+    if count_observers == 1
+      @driver.active = true
     end
+  end
+
+  def delete_observer(obs)
+    super(obs)
+    if count_observers == 0
+      @driver.active = false
+    end
+  end
+
+  def active?
+    count_observers > 0
+  end
+
+  private
+
+  def on_data(msg)
+    status = load_gate_status(msg)
+    if status != @last_status
+      @last_status = status
+      changed
+      notify_observers(status)
+    end
+  end
+
+  def load_gate_status(from_gate)
+    {
+      # from int id to string state
+      state:    STATE_ID_TO_S[from_gate[:s]],
+      # from int out of 100 to float
+      position: from_gate[:p].to_f / 100
+    }
+  end
+
+  def log
+    App.log.namespaced(self.class)
   end
 end

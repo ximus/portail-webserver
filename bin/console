@@ -2,7 +2,7 @@
 
 require File.join(File.dirname(__FILE__), '../config/boot')
 
-puts "Welcome to #{app.i18n.name}'s dev console"
+puts "Welcome to #{App.i18n.name}'s dev console"
 puts "\n"
 
 Pry.start

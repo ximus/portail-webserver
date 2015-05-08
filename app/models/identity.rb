@@ -1,5 +1,6 @@
 class Identity < Model
   belongs_to :user
+  serialize :user_info
 
   class << self
     def from_omniauth(auth_hash)
@@ -9,6 +10,7 @@ class Identity < Model
       }
       model = where(attrs).first
       if model.nil?
+        attrs[:user_info] = User.extract_from_auth_hash(auth_hash)
         model = create(attrs)
       end
       model

@@ -9,6 +9,8 @@ class CreateUsers < ActiveRecord::Migration
 
       t.timestamps
 
+      t.datetime :last_seen_at
+
       t.index :vetted_by
     end
   end

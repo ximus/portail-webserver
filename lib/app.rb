@@ -5,6 +5,8 @@ require 'active_support/core_ext/hash/keys.rb'
 require 'active_support/core_ext/module/delegation.rb'
 require 'active_support/core_ext/class/attribute.rb'
 require 'active_support/core_ext/string'
+require 'active_support/core_ext/module'
+require 'active_support/core_ext/object'
 require 'active_support/dependencies'
 require 'fileutils'
 require 'pathname'
@@ -14,7 +16,8 @@ require 'settingslogic'
 require 'active_record'
 require 'activeuuid'
 
-# MultiJson.load_options = { symbolize_keys: true }
+require 'multi_delegator'
+MultiJson.load_options = { symbolize_keys: true }
 
 module App
   extend self
@@ -23,7 +26,9 @@ module App
     migrations: 'db/migrate',
     tests:      'spec',
     log:        'log',
-    tmp:        'tmp'
+    tmp:        'tmp',
+    config:     'config',
+    public:     'static'
   }
 
   attr_reader :env
@@ -37,34 +42,21 @@ module App
   attr_reader :assets
   attr_reader :paths
 
-  def request_thread_count
-    if const_defined?('Puma') and Puma.respond_to?(:cli_config)
-      Puma.cli_config.options[:max_threads]
-    else
-      2
-    end
-  end
 
   def init
-    root_path = File.expand_path('..', File.dirname(__FILE__))
-    @root   = Pathname.new(root_path)
-    @paths  = OpenStruct.new(DEFAULT_PATHS.inject({}) { |h, (k, v)| h[k] = root.join(v); h })
-    @env    = (ENV['ENV'] || ENV['RACK_ENV'] || 'development').inquiry
-    FileUtils.mkdir_p(root.join('log'))
-    @log    = Logger.new(paths.log.join("#{env}.log"))
-    # DESIGN: I wish Auth module took care of this initialization
-    OmniAuth.config.logger = log
-    @config = load_config
-    @i18n   = config.i18n
-    # wrap all paths with a Pathname off root
+    @env = (
+      ENV['ENV'] || ENV['RACK_ENV'] || 'development'
+    ).inquiry
+    initialize_root_path
+    initialize_config
+    initialize_paths
     initialize_autoload_paths
+    initialize_logging
+    @i18n = config.i18n
     initialize_persistance
     @assets = Assets.new
     load_routes
-  end
-
-  def load_routes
-    require root.join('config/routes')
+    run_env_initializers
   end
 
   def initialize_autoload_paths
@@ -74,10 +66,6 @@ module App
       root.join("app/helpers"),
       root.join("app/controllers")
     ]
-  end
-
-  def call(env)
-    endpoint.call(env)
   end
 
   def initialize_persistance
@@ -90,11 +78,49 @@ module App
     ActiveUUID::Patches.apply!
   end
 
+  def initialize_root_path
+    root_path = File.expand_path('..', File.dirname(__FILE__))
+    @root = Pathname.new(root_path)
+  end
+
+  def initialize_paths
+    # wrap all paths with a Pathname off root
+    paths_hash = DEFAULT_PATHS.inject({}) do |h, (k, v)|
+      h[k] = Array.wrap(v).compact.map do |path|
+        root.join(path)
+      end
+      h[k] = h[k].first if h[k].count == 1
+      h
+    end
+    # import custom path overrides
+    if config.paths
+      config.paths.each do |k,v|
+        paths_hash[k] = Pathname.new(v)
+      end
+    end
+    @paths = OpenStruct.new(paths_hash)
+  end
+
+  def initialize_logging
+    FileUtils.mkdir_p(paths.log)
+    log_file = File.open(paths.log.join("#{env}.log"), "a")
+    # log both to file and stdout in developement
+    if env.development?
+      STDOUT.sync = true
+      log_io = MultiDelegator.delegate(:write, :close).to(STDOUT, log_file)
+    else
+      log_io = log_file
+    end
+    @log = AppLogger.new(log_io)
+    # DESIGN: I wish Auth module took care of this initialization
+    OmniAuth.config.logger = log
+  end
+
   # paths config/application.yml and config/application/environment/{appenv}.yml
   # will be searched for optional config files. Env-specific config will
   # override application.yml
   def load_config
-    config_path = root.join('config')
+    config_path = root.join(DEFAULT_PATHS[:config])
     config = {}
     # %W(application.yml environment/development.yml).each do |path|
     %W(application.yml environment/#{env}.yml).each do |path|
@@ -107,7 +133,30 @@ module App
     Settingslogic.new(HashWithIndifferentAccess.new(config))
   end
 
+  def initialize_config
+    @config = load_config
+  end
+
+  def run_env_initializers
+    env_exec = paths.config.join("environment/#{env}.rb")
+    if File.exists?(env_exec)
+      require env_exec
+    end
+  end
+
+  def request_thread_count
+    if const_defined?('Puma') and Puma.respond_to?(:cli_config)
+      Puma.cli_config.options[:max_threads]
+    else
+      2
+    end
+  end
+
   def define_routes(&block)
     @endpoint ||= Rack::Builder.new(&block)
+  end
+
+  def load_routes
+    require root.join('config/routes')
   end
 end

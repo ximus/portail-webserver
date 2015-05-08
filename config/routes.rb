@@ -1,12 +1,24 @@
 require 'rack/session/cookie'
+require 'rack/disable_lint'
 require 'rack-server-pages'
 require 'omniauth'
 
 App.define_routes do
+  # warmup do |app|
+  #   client = Rack::MockRequest.new(app)
+  #   client.get('/')
+  # end
+
   if App.env.development?
     use Rack::DisableHTTPCaching
     # use Rack::CodeReloader
   end
+
+  ###############################
+  #
+  # Logging middleware
+  #
+  ###############################
 
   class LoggingMiddleware < Struct.new(:app)
     def call(env)
@@ -16,20 +28,71 @@ App.define_routes do
   end
   use LoggingMiddleware
 
+
+  ###############################
+  #
+  # DB middleware
+  #
+  ###############################
+
   # avoid ActiveRecord::ConnectionTimeoutError
   use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
+
+  ###############################
+  #
+  # Session middleware
+  #
+  ###############################
+
   use Rack::Session::Cookie, {
     expire_after: 2592000, # 30 days
-    secret: (App.config.session_secret || raise('need a session secret'))
+    secret: (
+      App.config.session_secret || raise('missing session secret')
+    )
   }
+
+
+  ###############################
+  #
+  # Websockets middleware
+  #
+  ###############################
+
+  map '/gate/ws' do
+    run Gate::Websocket.new
+  end
+
+  ###############################
+  #
+  # Assets middleware
+  #
+  ###############################
 
   App.assets.basepath = '/assets'
   map App.assets.basepath do
     run App.assets
   end
 
-  use Rack::StaticIfPresent, urls: ["/"], root: App.root.join('static')
+
+  ###############################
+  #
+  # Static files middleware
+  #
+  ###############################
+
+  # Register web client path
+  use Rack::StaticIfPresent, urls: ["/"], root: App.paths.client
+  App.log.info "Registered client path at #{App.paths.client}"
+  # Register static dirs
+  use Rack::StaticIfPresent, urls: ["/"], root: App.paths.public
+
+
+  ###############################
+  #
+  # Auth middleware
+  #
+  ###############################
 
   # Routes: /auth/:provider, /auth/:provider/callback
   use OmniAuth::Builder do
@@ -45,13 +108,20 @@ App.define_routes do
     end
   end
 
-  map '/auth' do
-    run AuthController
-  end
 
   # map '/views' do
   #   run Views.new
   # end
 
-  run MainController
+  ###############################
+  #
+  # Controllers
+  #
+  ###############################
+
+  run Rack::Cascade.new([
+    MainController,
+    AuthController,
+    GateController
+  ])
 end

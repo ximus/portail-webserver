@@ -5,6 +5,8 @@ class CreateIdentities < ActiveRecord::Migration
       t.string :provider_uid, null: false
       t.string :provider,     null: false
       t.uuid   :slug, null: false
+      # info hash returned from provider
+      t.text   :user_info
 
       t.timestamps
 

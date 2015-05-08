@@ -3,6 +3,7 @@ require_relative 'config/boot'
 require 'yaml'
 require 'logger'
 require 'active_record'
+require 'fileutils'
 
 namespace :db do
   def migrations_path
@@ -21,8 +22,9 @@ namespace :db do
 
   desc 'Drops the database for the current DATABASE_ENV'
   task :drop => :environment do
-    raise 'not implemented'
-    ActiveRecord::Base.connection.drop_database(DATABASE_ENV)
+    db = App.root.join("db/#{App.env}.sqlite")
+    App.log.info "deleting #{db}"
+    FileUtils.rm(db)
   end
 
   desc 'Migrate the database (options: VERSION=x, VERBOSE=false).'

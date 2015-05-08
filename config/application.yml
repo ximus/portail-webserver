@@ -1,5 +1,12 @@
 ---
+gate:
+  driver: fake
+  uri: dev.portailbib.com
+paths:
+  client: ../portail-webclient/dist
 session_secret: ''
+websocket:
+  ping: 10
 database:
   adapter: sqlite3
   encoding: utf8
@@ -11,18 +18,11 @@ i18n:
   auth:
     google:
       name: "Google"
-      icon: ""
-      css_id: google-plus
     twitter:
       name: "Twitter"
-      icon: ""
     yahoo:
       name: "Yahoo"
-      icon: ""
     microsoft:
       name: "Microsoft"
-      icon: ""
-      css_id: windows
     facebook:
       name: "Facebook"
-      icon: ""

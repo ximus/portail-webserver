@@ -5,7 +5,11 @@ module ControllerHelpers
 
   def current_identity
     @current_identity ||= begin
-      Identity.includes(:user).find_by(slug: session[:iid]) if session[:iid]
+      if session[:iid]
+        id = Identity.includes(:user).find_by(slug: session[:iid])
+        session[:iid] = nil if id.blank?
+        id
+      end
     end
   end
 
@@ -34,5 +38,13 @@ module ControllerHelpers
 
   def require_authentication
     authenticated? || halt(401)
+  end
+
+  def log
+    @logger ||= App.log.namespaced(self.class)
+  end
+
+  def host
+    env['HTTP_HOST']
   end
 end

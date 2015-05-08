@@ -3,10 +3,14 @@ class MainController < Controller
   # 2 paths: user exists, doesn't exist
   put '/profile' do
     require_authentication
-    data = MultiJson.load(request.body.read, symbolize_keys: true)
-    profile = data[:profile]
 
-    halt 422 unless profile
+    begin
+      data = MultiJson.load(request.body.read, symbolize_keys: true)
+      profile = data[:profile]
+    rescue MultiJson::ParseError
+    end
+
+    halt 422, "profile is missing" unless profile
 
     profile.slice!(:name, :email, :image_url)
     user = current_user
@@ -26,7 +30,22 @@ class MainController < Controller
     jbuilder :'data/user', locals: { user: user }
   end
 
-  get '/*' do
-    erb :index
+  get '/dna.json' do
+    jbuilder :'data/client_config'
+  end
+
+  get '/i18n.json' do
+    content_type :json
+    # currently dumping all translations,
+    # try to make sure nothing private gets leaked
+    App.i18n.to_json
+  end
+
+  get %r{^/(profile|login|gate)?$} do
+    path = App.paths.client.join('index.html')
+    if not File.exists?(path)
+      raise "missing client index file"
+    end
+    File.read(path)
   end
 end
