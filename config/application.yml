@@ -6,7 +6,7 @@ paths:
   client: ../portail-webclient/dist
 session_secret: ''
 websocket:
-  ping: 10
+  ping: 20
 database:
   adapter: sqlite3
   encoding: utf8
