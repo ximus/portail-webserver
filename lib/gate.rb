@@ -9,6 +9,8 @@ class Gate
   autoload :Fake, drivers + '/fake'
   autoload :Real, drivers + '/real'
 
+  # Gate states
+  # unknown basically means laser is offline
   UNKNOWN     = "unknown"
   OPEN        = "open"
   OPENING     = "opening"

@@ -11,15 +11,17 @@ class Gate
 
     def call(env)
       if Faye::WebSocket.websocket?(env)
-        ws = Faye::WebSocket.new(env, opts)
+        ws = Faye::WebSocket.new(env, [], opts)
 
-        log.debug [:open]
+        ws.on :open do
+          log.debug [:open]
+          add_client(ws)
 
-        if @gate.active?
-          ws.send(@gate.status)
+          if @gate.active? && @gate.status
+            log.debug "pushing seed status to new client #{@gate.status}"
+            ws.send(serialize(@gate.status))
+          end
         end
-
-        add_client(ws)
 
         ws.on :message do |event|
           msg = MultiJson.load(event.data)
@@ -61,8 +63,9 @@ class Gate
       end
     end
 
-    def update(gate_status)
-      broadcast(MultiJson.dump(gate_status))
+    def update(status)
+      log.debug "status changed, broadcasting #{status}"
+      broadcast(serialize(status))
     end
 
     def broadcast(message)
@@ -80,6 +83,10 @@ class Gate
 
     def log
       App.log.namespaced("Gate Webscoket")
+    end
+
+    def serialize(msg)
+      MultiJson.dump(msg)
     end
 
     def opts
