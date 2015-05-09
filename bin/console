@@ -1,8 +1,14 @@
 #!/usr/bin/env ruby
 
-require File.join(File.dirname(__FILE__), '../config/boot')
+require_relative '../config/boot'
 
 puts "Welcome to #{App.i18n.name}'s dev console"
 puts "\n"
+
+def decode_cookie(val)
+  val = val.split('--').first
+  val.reverse!
+  Marshal.load(val.unpack('m').first)
+end
 
 Pry.start
