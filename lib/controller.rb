@@ -17,7 +17,7 @@ class Controller < Sinatra::Application
   before do
     if App.env.development?
       # a simple read access to force loading the session
-      session['foo'] = 'foobar'
+      session['foo']
       log.debug("rack.session: #{session.inspect}")
     end
   end
