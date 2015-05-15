@@ -11,6 +11,7 @@ App.define_routes do
 
   if App.env.development?
     use Rack::DisableHTTPCaching
+    use Rack::MiniProfiler
     # use Rack::CodeReloader
   end
 
